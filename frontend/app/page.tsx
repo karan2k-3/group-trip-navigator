@@ -1,48 +1,37 @@
-import ChatWindow from "@/components/ChatWindow";
+'use client';
+
+import { FormEvent, useMemo, useState } from 'react';
+
+type Screen = 'home' | 'create' | 'invite' | 'preferences' | 'dashboard';
+type Vote = 'yes' | 'maybe' | 'no' | null;
+
+const interests = ['Beach', 'Food', 'Nightlife', 'Nature', 'Culture', 'Adventure'];
+const options = [
+  { id: 'bali', badge: 'Best overall', destination: 'Bali, Indonesia', dates: '8–12 January', price: '$950 AUD pp', score: 91, reasons: ['Fits the group’s shared dates', 'Beach, food and nightlife in one place', 'Stays inside most budgets'], tradeoff: 'One member may need a cheaper room option.' },
+  { id: 'gold-coast', badge: 'Best value', destination: 'Gold Coast, Australia', dates: '9–12 January', price: '$640 AUD pp', score: 86, reasons: ['Lowest overall cost', 'No passport or long flight needed', 'Strong beach and nightlife match'], tradeoff: 'A shorter trip with fewer cultural activities.' },
+  { id: 'melbourne', badge: 'City escape', destination: 'Melbourne, Australia', dates: '8–11 January', price: '$710 AUD pp', score: 78, reasons: ['Great for food and culture', 'Easy city transport', 'Comfortable budget fit'], tradeoff: 'Does not satisfy the group’s beach preference.' },
+];
 
 export default function Home() {
-  return (
-    <main className="night-sky" style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      <header
-        style={{
-          borderBottom: "1px solid rgba(231, 169, 76, 0.25)",
-          padding: "22px 20px",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: 720,
-            margin: "0 auto",
-            display: "flex",
-            alignItems: "baseline",
-            justifyContent: "space-between",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-            <span style={{ fontFamily: "var(--font-display)", fontSize: 24, color: "#F5F1E6" }}>
-              Wayfinder
-            </span>
-            <span
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 11,
-                color: "var(--color-amber)",
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-              }}
-            >
-              AI Travel Agent
-            </span>
-          </div>
-          <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--color-mist)" }}>
-            BOARDING · ANY DESTINATION
-          </span>
-        </div>
-      </header>
+  const [screen, setScreen] = useState<Screen>('home');
+  const [tripName, setTripName] = useState('Summer escape');
+  const [city, setCity] = useState('Sydney');
+  const [groupSize, setGroupSize] = useState(5);
+  const [selectedInterests, setSelectedInterests] = useState(['Beach', 'Food', 'Nightlife']);
+  const [budget, setBudget] = useState('800–1,100');
+  const [votes, setVotes] = useState<Record<string, Vote>>({ bali: null, 'gold-coast': null, melbourne: null });
+  const [locked, setLocked] = useState<string | null>(null);
+  const [showPrefs, setShowPrefs] = useState(false);
+  const voteCount = useMemo(() => Object.values(votes).filter(Boolean).length, [votes]);
+  const toggleInterest = (item: string) => setSelectedInterests((current) => current.includes(item) ? current.filter((value) => value !== item) : [...current, item]);
+  const createTrip = (event: FormEvent) => { event.preventDefault(); setScreen('invite'); };
+  const vote = (id: string, value: Vote) => setVotes((current) => ({ ...current, [id]: value }));
 
-      <div style={{ flex: 1 }}>
-        <ChatWindow />
-      </div>
-    </main>
-  );
+  if (screen === 'home') return <main className="landing"><nav><a className="brand" href="#">✦ TripSync</a><div className="nav-links"><a href="#how">How it works</a><button className="ghost" onClick={() => setScreen('preferences')}>Join a trip</button><button className="nav-cta" onClick={() => setScreen('create')}>Create a trip</button></div></nav><section className="hero"><div className="eyebrow">AI GROUP TRIP PLANNING</div><h1>Plan trips your whole group <em>actually agrees on.</em></h1><p>TripSync turns everyone’s dates, budget and travel vibe into fair options—so your next getaway starts without group-chat chaos.</p><div className="hero-actions"><button className="primary" onClick={() => setScreen('create')}>Create a group trip <span>→</span></button><button className="secondary" onClick={() => setScreen('preferences')}>I have an invite code</button></div><div className="proof"><span>✓ No sign-up for demo</span><span>✓ Private budget preferences</span><span>✓ AI-powered compromises</span></div></section><section id="how" className="steps"><div><b>01</b><h3>Create a trip</h3><p>Set the basics and invite your group with one link.</p></div><div><b>02</b><h3>Everyone adds preferences</h3><p>Dates, budgets, vibes and non-negotiables stay simple.</p></div><div><b>03</b><h3>Agree faster</h3><p>Wayfinder ranks fair options and your group votes.</p></div></section></main>;
+  if (screen === 'create') return <main className="app-shell"><Topbar onBack={() => setScreen('home')} /><section className="form-wrap"><div className="form-intro"><span className="step">STEP 1 OF 3</span><h1>Let’s plan something good.</h1><p>Give Wayfinder the group basics. You can refine everything after everyone joins.</p></div><form className="trip-form" onSubmit={createTrip}><label>Trip name<input value={tripName} onChange={(e) => setTripName(e.target.value)} required /></label><div className="two-col"><label>Leaving from<input value={city} onChange={(e) => setCity(e.target.value)} required /></label><label>Group size<input type="number" min="2" max="20" value={groupSize} onChange={(e) => setGroupSize(Number(e.target.value))} /></label></div><label>Approximate budget per person (AUD)<input value={budget} onChange={(e) => setBudget(e.target.value)} /></label><label>What kind of trip are you after?</label><div className="chips">{interests.map((item) => <button type="button" key={item} className={selectedInterests.includes(item) ? 'chip active' : 'chip'} onClick={() => toggleInterest(item)}>{item}</button>)}</div><button className="primary wide" type="submit">Create trip workspace <span>→</span></button></form></section></main>;
+  if (screen === 'invite') return <main className="app-shell"><Topbar onBack={() => setScreen('create')} /><section className="form-wrap invite"><span className="success-dot">✓</span><span className="step">TRIP CREATED</span><h1>{tripName} is ready.</h1><p>Send this code to your group. Once everyone has added their preferences, Wayfinder will find the best fit.</p><div className="invite-code">BALI-27 <button onClick={() => navigator.clipboard?.writeText('BALI-27')}>Copy</button></div><div className="member-list"><div><span className="avatar you">K</span><span><b>You</b><small>Preferences completed</small></span><i>✓</i></div><div><span className="avatar">?</span><span><b>{groupSize - 1} friends to invite</b><small>Waiting for responses</small></span></div></div><button className="primary wide" onClick={() => setScreen('preferences')}>Preview member preferences <span>→</span></button></section></main>;
+  if (screen === 'preferences') return <main className="app-shell"><Topbar onBack={() => setScreen('home')} /><section className="form-wrap"><div className="form-intro"><span className="step">BALI-27 · YOUR PREFERENCES</span><h1>Tell the group what works for you.</h1><p>Your exact budget stays private. The group only sees whether options work overall.</p></div><div className="trip-form"><label>Your name<input defaultValue="Karan" /></label><label>Your comfortable budget (AUD)<select defaultValue="800-1100"><option>Under $600</option><option>$600–800</option><option>$800–1,100</option><option>$1,100–1,500</option><option>$1,500+</option></select></label><label>Your top interests</label><div className="chips">{interests.map((item) => <button type="button" key={item} className={selectedInterests.includes(item) ? 'chip active' : 'chip'} onClick={() => toggleInterest(item)}>{item}</button>)}</div><label>Anything non-negotiable?<input placeholder="e.g. Vegetarian food, no long flights" /></label><button className="primary wide" onClick={() => setScreen('dashboard')}>Save preferences <span>→</span></button></div></section></main>;
+  return <main className="app-shell dashboard"><Topbar onBack={() => setScreen('home')} /><header className="trip-header"><div><span className="step">GROUP TRIP · {city.toUpperCase()} DEPARTURE</span><h1>{tripName}</h1><p>8–12 January · {groupSize} travellers · Budget target: ${budget} pp</p></div><button className="outline" onClick={() => setShowPrefs(!showPrefs)}>{showPrefs ? 'Hide' : 'View'} group preferences</button></header>{showPrefs && <section className="preference-summary"><div><small>RESPONSES</small><strong>{groupSize}/{groupSize}</strong><span>Everyone has answered</span></div><div><small>TOP VIBES</small><strong>Beach · Food · Nightlife</strong><span>Based on group preferences</span></div><div><small>BUDGET FIT</small><strong>$640–$1,100</strong><span>Options within group range</span></div></section>}<section className="ai-banner"><div className="ai-icon">✦</div><div><span>WAYFINDER ANALYSIS</span><h2>Here are the options that work best for your group.</h2><p>We balanced every traveller’s dates, budget and trip style. Vote on the option you would genuinely take.</p></div></section><section className="option-grid">{options.map((option) => <article className={locked === option.id ? 'option-card selected' : 'option-card'} key={option.id}><div className="card-top"><span className="badge">{option.badge}</span><span className="score">{option.score}% match</span></div><h2>{option.destination}</h2><p className="option-meta">{option.dates} <i>·</i> <b>{option.price}</b></p><h4>Why it works</h4><ul>{option.reasons.map((reason) => <li key={reason}>✓ {reason}</li>)}</ul><div className="tradeoff"><b>Trade-off</b><p>{option.tradeoff}</p></div>{locked === option.id ? <div className="locked">✓ Trip option locked</div> : <div className="vote-row"><button className={votes[option.id] === 'yes' ? 'yes active-vote' : 'yes'} onClick={() => vote(option.id, 'yes')}>✓ Yes</button><button className={votes[option.id] === 'maybe' ? 'maybe active-vote' : 'maybe'} onClick={() => vote(option.id, 'maybe')}>Maybe</button><button className={votes[option.id] === 'no' ? 'no active-vote' : 'no'} onClick={() => vote(option.id, 'no')}>No</button></div>}<small className="vote-status">{votes[option.id] ? `Your vote: ${votes[option.id]}` : 'No vote yet'}</small>{votes[option.id] === 'yes' && !locked && <button className="lock-button" onClick={() => setLocked(option.id)}>Lock this plan</button>}</article>)}</section><footer className="dashboard-footer"><span>{voteCount} of 3 options considered</span><button className="ghost" onClick={() => setScreen('home')}>Start another demo</button></footer></main>;
 }
+
+function Topbar({ onBack }: { onBack: () => void }) { return <nav className="app-nav"><button className="brand back" onClick={onBack}>✦ TripSync</button><span>Group Trip Navigator · Demo</span></nav>; }
