@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  /* --- Design tokens: "night flight / boarding pass" --- */
+  --color-night: #10152B;       /* deep indigo-navy, primary background */
+  --color-night-soft: #171E3D;  /* panel background, one step lighter */
+  --color-paper: #F5F1E6;       /* boarding-pass stock, agent bubble bg */
+  --color-amber: #E7A94C;       /* accent — call to action, flight path */
+  --color-teal: #4C8C82;        /* secondary accent — success/live data */
+  --color-ink: #1A1F33;         /* body text on paper */
+  --color-mist: #8A93B8;        /* muted text on night background */
+
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--color-night);
+  color: var(--color-mist);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* Subtle dotted flight-path texture across the night background */
+.night-sky {
+  min-height: 100vh;
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, rgba(231, 169, 76, 0.35) 50%, transparent 50%),
+    radial-gradient(1px 1px at 70% 15%, rgba(231, 169, 76, 0.25) 50%, transparent 50%),
+    radial-gradient(1px 1px at 40% 70%, rgba(231, 169, 76, 0.2) 50%, transparent 50%),
+    radial-gradient(1px 1px at 85% 60%, rgba(231, 169, 76, 0.3) 50%, transparent 50%),
+    radial-gradient(1px 1px at 55% 45%, rgba(231, 169, 76, 0.15) 50%, transparent 50%);
+  background-repeat: no-repeat;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .plane-glide {
+    animation: glide 2.4s ease-in-out infinite;
+  }
+}
+
+@keyframes glide {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  50% { transform: translateX(4px) translateY(-2px); }
+}
+
+/* Focus visibility for keyboard nav */
+:focus-visible {
+  outline: 2px solid var(--color-amber);
+  outline-offset: 2px;
+}
