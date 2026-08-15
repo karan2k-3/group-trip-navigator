@@ -1,121 +1,262 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const TripSyncApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class TripSyncApp extends StatelessWidget {
+  const TripSyncApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'TripSync',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2557D6)),
+        useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const TripHome(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class TripHome extends StatefulWidget {
+  const TripHome({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<TripHome> createState() => _TripHomeState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+class _TripHomeState extends State<TripHome> {
+  int _index = 0;
+  final _pages = const [OverviewPage(), ItineraryPage(), BudgetPage(), ChatPage()];
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    final labels = ['TripSync', 'Itinerary', 'Budget', 'Chat'];
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+        title: Text(labels[_index]),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: CircleAvatar(
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              child: const Text('K'),
             ),
+          ),
+        ],
+      ),
+      body: _pages[_index],
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _index,
+        onDestinationSelected: (value) => setState(() => _index = value),
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
+          NavigationDestination(icon: Icon(Icons.map_outlined), selectedIcon: Icon(Icons.map), label: 'Plan'),
+          NavigationDestination(icon: Icon(Icons.account_balance_wallet_outlined), selectedIcon: Icon(Icons.account_balance_wallet), label: 'Budget'),
+          NavigationDestination(icon: Icon(Icons.chat_bubble_outline), selectedIcon: Icon(Icons.chat_bubble), label: 'Chat'),
+        ],
+      ),
+    );
+  }
+}
+
+class OverviewPage extends StatelessWidget {
+  const OverviewPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        Text('Melbourne Weekend', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 6),
+        Text('18–20 October • 4 travellers', style: Theme.of(context).textTheme.bodyLarge),
+        const SizedBox(height: 20),
+        Card(
+          clipBehavior: Clip.antiAlias,
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(colors: [Color(0xFF2557D6), Color(0xFF6C3FD1)]),
+            ),
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Next up', style: TextStyle(color: Colors.white70, fontSize: 16)),
+                SizedBox(height: 8),
+                Text('Yarra Valley day tour', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                SizedBox(height: 6),
+                Text('Saturday, 8:30 AM', style: TextStyle(color: Colors.white)),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+        Text('Your group', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 12),
+        const Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: [
+            MemberChip(name: 'Karan', initial: 'K', color: Color(0xFF2557D6)),
+            MemberChip(name: 'Mia', initial: 'M', color: Color(0xFFE05A47)),
+            MemberChip(name: 'Alex', initial: 'A', color: Color(0xFF1D9A6C)),
+            MemberChip(name: 'Sam', initial: 'S', color: Color(0xFFF0A43A)),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        const SizedBox(height: 24),
+        Text('Quick actions', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 8),
+        const ListTile(leading: Icon(Icons.add_location_alt_outlined), title: Text('Add a place'), subtitle: Text('Save a café, attraction, or hotel')),
+        const ListTile(leading: Icon(Icons.person_add_alt_1_outlined), title: Text('Invite traveller'), subtitle: Text('Share your trip link with friends')),
+      ],
+    );
+  }
+}
+
+class ItineraryPage extends StatelessWidget {
+  const ItineraryPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        Text('Saturday, 19 October', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 16),
+        const PlanItem(time: '8:30 AM', title: 'Yarra Valley day tour', detail: 'Meet at Federation Square', icon: Icons.directions_bus),
+        const PlanItem(time: '12:30 PM', title: 'Lunch at Oakridge', detail: 'Table booked for 4', icon: Icons.restaurant),
+        const PlanItem(time: '4:00 PM', title: 'Chocolate & ice cream stop', detail: 'Yarra Valley Chocolaterie', icon: Icons.icecream),
+        const PlanItem(time: '7:30 PM', title: 'Dinner in Fitzroy', detail: 'Vote on restaurants in chat', icon: Icons.dinner_dining),
+      ],
+    );
+  }
+}
+
+class BudgetPage extends StatelessWidget {
+  const BudgetPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Trip budget', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                Text(r'$1,240 spent of $1,600', style: Theme.of(context).textTheme.headlineSmall),
+                const SizedBox(height: 12),
+                const LinearProgressIndicator(value: .775),
+                const SizedBox(height: 8),
+                const Text(r'$360 remaining'),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+        Text('Recent expenses', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 8),
+        const ExpenseItem(title: 'Apartment deposit', payer: 'Paid by Karan', amount: r'$680'),
+        const ExpenseItem(title: 'Yarra Valley tour', payer: 'Paid by Mia', amount: r'$420'),
+        const ExpenseItem(title: 'Airport transfer', payer: 'Paid by Alex', amount: r'$140'),
+      ],
+    );
+  }
+}
+
+class ChatPage extends StatelessWidget {
+  const ChatPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.all(20),
+            children: const [
+              ChatBubble(sender: 'Mia', message: 'I booked the Yarra Valley tour! 🍷', mine: false),
+              ChatBubble(sender: 'You', message: 'Amazing — I added it to the itinerary.', mine: true),
+              ChatBubble(sender: 'Alex', message: 'Should we choose dinner in Fitzroy?', mine: false),
+              ChatBubble(sender: 'Sam', message: 'Yes! I vote for Italian.', mine: false),
+            ],
+          ),
+        ),
+        SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            child: Row(
+              children: [
+                const Expanded(child: TextField(decoration: InputDecoration(hintText: 'Message group', border: OutlineInputBorder()))),
+                const SizedBox(width: 8),
+                IconButton.filled(onPressed: () {}, icon: const Icon(Icons.send)),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class MemberChip extends StatelessWidget {
+  final String name;
+  final String initial;
+  final Color color;
+  const MemberChip({super.key, required this.name, required this.initial, required this.color});
+  @override
+  Widget build(BuildContext context) {
+    return Chip(avatar: CircleAvatar(backgroundColor: color, child: Text(initial, style: const TextStyle(color: Colors.white))), label: Text(name));
+  }
+}
+
+class PlanItem extends StatelessWidget {
+  final String time;
+  final String title;
+  final String detail;
+  final IconData icon;
+  const PlanItem({super.key, required this.time, required this.title, required this.detail, required this.icon});
+  @override
+  Widget build(BuildContext context) {
+    return Card(child: ListTile(leading: CircleAvatar(child: Icon(icon)), title: Text(title), subtitle: Text('$time • $detail')));
+  }
+}
+
+class ExpenseItem extends StatelessWidget {
+  final String title;
+  final String payer;
+  final String amount;
+  const ExpenseItem({super.key, required this.title, required this.payer, required this.amount});
+  @override
+  Widget build(BuildContext context) {
+    return Card(child: ListTile(leading: const CircleAvatar(child: Icon(Icons.receipt_long)), title: Text(title), subtitle: Text(payer), trailing: Text(amount, style: const TextStyle(fontWeight: FontWeight.bold))));
+  }
+}
+
+class ChatBubble extends StatelessWidget {
+  final String sender;
+  final String message;
+  final bool mine;
+  const ChatBubble({super.key, required this.sender, required this.message, required this.mine});
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: mine ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(12),
+        constraints: const BoxConstraints(maxWidth: 300),
+        decoration: BoxDecoration(color: mine ? const Color(0xFF2557D6) : const Color(0xFFE9ECF3), borderRadius: BorderRadius.circular(16)),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(sender, style: TextStyle(fontWeight: FontWeight.bold, color: mine ? Colors.white70 : Colors.black54)), const SizedBox(height: 4), Text(message, style: TextStyle(color: mine ? Colors.white : Colors.black87))]),
       ),
     );
   }
