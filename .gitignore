@@ -1,0 +1,55 @@
+# macOS
+.DS_Store
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.mobileprovision
+
+# JavaScript / Next.js
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env.local
+
+# Python
+backend/__pycache__/
+backend/**/*.py[cod]
+backend/.venv/
+backend/venv/
+backend/env/
+backend/.pytest_cache/
+
+# Flutter / Dart generated files
+mobile/.dart_tool/
+mobile/build/
+mobile/.packages
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+
+# Android / iOS generated items
+mobile/android/.gradle/
+mobile/android/app/build/
+mobile/ios/Pods/
+mobile/ios/.symlinks/
+mobile/ios/Flutter/ephemeral/
+
+# IDE
+.idea/
+.vscode/
+
+# Ignore virtual environments anywhere in the project
+venv/
+**/venv/
+.venv/
+**/.venv/
+
+# Ignore virtual environments anywhere in the project
+venv/
+**/venv/
+.venv/
+**/.venv/
